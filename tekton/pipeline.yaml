@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: node-buildah-pipeline
+spec:
+  params:
+  - description: Application name
+    name: app-name
+    type: string
+  - description: Source code repository
+    name: source-repo
+    type: string
+  - description: Image repository
+    name: image-repo
+    type: string
+  tasks:
+  - name: clone-repository
+    params:
+    - name: url
+      value: $(params.source-repo)
+    taskRef:
+      kind: ClusterTask
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: pipeline-shared-data
+  - name: run-tests
+    params:
+    - name: ARGS
+      value:
+      - install-ci-test
+    runAfter:
+    - clone-repository
+    taskRef:
+      kind: Task
+      name: npm
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  - name: build-and-push-image
+    params:
+    - name: IMAGE
+      value: $(params.image-repo):$(tasks.clone-repository.results.commit)
+    runAfter:
+    - run-tests
+    taskRef:
+      kind: ClusterTask
+      name: buildah
+    workspaces:
+    - name: source
+      workspace: pipeline-shared-data
+  workspaces:
+  - name: pipeline-shared-data

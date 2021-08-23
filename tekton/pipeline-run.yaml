@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: buildah-pipeline-run-
+spec:
+  serviceAccountName: build-bot
+  params:
+    - name: source-repo
+      value: https://github.com/cloud-native-garage-method-cohort/sam-chinellato-buildah-assignment.git
+    - name: image-repo
+      value: quay.io/samchinellato/buildah-assignment
+    - name: app-name
+      value: buildah-assignment
+  pipelineRef:
+    name: node-buildah-pipeline
+  workspaces:
+    - name: pipeline-shared-data
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
