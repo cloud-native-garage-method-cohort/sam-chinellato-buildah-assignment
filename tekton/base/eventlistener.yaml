@@ -4,3 +4,22 @@ data:
 kind: Secret
 metadata:
   name: github-interceptor-secret
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: tekton-trigger
+spec:
+  serviceAccountName: tekton-trigger
+  triggers:
+    - name: push-build
+      interceptors:
+        - github:
+            secretRef:
+              secretName: github-interceptor-secret
+              secretKey: secretToken
+            eventTypes: ["push"]
+      bindings:
+       - ref: tekton-trigger
+      template:
+        name: tekton-trigger
