@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app-sam-deployment
+  labels:
+    app: demo-express-app
+    app.kubernetes.io/instance: demo-express-app-instance
+    app.kubernetes.io/name: demo-express-app
+    app.openshift.io/runtime: demo-express-app
+spec:
+  selector:
+    matchLabels:
+      app: demo-express-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-express-app
+    spec:
+      containers:
+      - name: demo-express-app
+        image: quay.io/samchinellato/buildah-assignment:0b2c92569828d7b6f7a41577b2935c25ca0bee84
+        ports:
+        - containerPort: 3000
