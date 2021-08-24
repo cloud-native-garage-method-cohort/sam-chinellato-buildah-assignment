@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: buildah-pipeline-run-
+  generateName: node-buildah-pipeline-run-
 spec:
   serviceAccountName: build-bot
   params:
